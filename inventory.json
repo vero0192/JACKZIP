@@ -29,7 +29,7 @@
     },
     {
       "file": "FILE_MANIFEST.txt",
-      "sha256": "a91820a0584c98c257703a4db31c2ce91803bcedaf8dab1e83b54ccdfb00d674"
+      "sha256": "2f3c7c360d053af2bc22e53d3f6be9d5143fc3ecf5a414794861ef172ccfb778"
     },
     {
       "file": "MOBILE_UPDATE.md",
@@ -37,7 +37,7 @@
     },
     {
       "file": "README.md",
-      "sha256": "0521cc660b84420fa48ca9175d9013a4b1f94042fb9afc7115904dcb0c52917e"
+      "sha256": "87ae904e2310a2004e40988008e5a97c1b1ed86f4f8c02131843868f89bcf952"
     },
     {
       "file": "app.js",
@@ -161,7 +161,7 @@
     },
     {
       "file": "docs/CONTINUE.md",
-      "sha256": "9ba568d798e3b3b46b9c3a0c71121560f111e34f253cdbfc32ae0eb422adf498"
+      "sha256": "d72c94843f4197408fa4b36df705827993959c08ae507b673ac2ba19ca996845"
     },
     {
       "file": "docs/DEPLOY_GITHUB.md",
@@ -169,7 +169,7 @@
     },
     {
       "file": "docs/KNOWN_LIMITATIONS.md",
-      "sha256": "baa3f1879a2a98672a2d820818aa033e0086f507b99fe8b109fbf2b12e8e3964"
+      "sha256": "8845e34137e6351e5e7067d78be7543ec95e5599ebe8803f5bad3d31892f73a8"
     },
     {
       "file": "docs/MOTION.md",
@@ -181,7 +181,7 @@
     },
     {
       "file": "docs/RELEASE_CHECKLIST.md",
-      "sha256": "b13cc0d5f076329fca4792a955e60d5d26b688fc7012f91b7539155347cd26f1"
+      "sha256": "7e8c6f4dafbbe37b1d643b98971927a70e194d5099d17ddc21a952e39c8dcfe9"
     },
     {
       "file": "docs/TESTING.md",
@@ -193,7 +193,7 @@
     },
     {
       "file": "docs/VERIFICATION.md",
-      "sha256": "2e2d470fa25c69b0254a67e87a42af7949ffd63d153f8f3b30242f485a961dea"
+      "sha256": "4f4ba2c154191bd152e4c8a08b065d1c58da38294e1308290e41da86199842ca"
     },
     {
       "file": "docs/VIP.md",
@@ -209,7 +209,11 @@
     },
     {
       "file": "docs/ci-report.json",
-      "sha256": "cf34faab6c22132bf14d2be6057e230919ad3a83b0b3d2bad5ccd6c1bd67c4f6"
+      "sha256": "5851cc03cb08e137aa36ef39c0ccb1d08fc60c3484085c6b286ca739cf16518e"
+    },
+    {
+      "file": "docs/live-report.json",
+      "sha256": "86c228a3b629fe5d42d9b801bd96a0db5e657df54e8e1a4e51f00e91327b13f1"
     },
     {
       "file": "export-contract-tests.mjs",

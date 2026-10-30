@@ -2,7 +2,6 @@
 
 - Real iPhone Safari, Android hardware, desktop Safari, Add to Home Screen, virtual-keyboard behavior, and installed standalone safe areas require device verification. Chromium emulation is not a real-device pass.
 - Firefox could not launch in this executor (sandbox/graphics startup errors); its application regression gate remains open.
-- GitHub Pages needs its one-time Source setting changed to GitHub Actions by the repository owner; the connection was denied administration access.
 - Live provider responses were spot-checked. Provider coverage, rate limits, uptime, and accuracy across all ZIPs are not guaranteed.
 - The ACS dataset is not bundled for offline enrichment. The cached app/parser works offline; remote lookups can fail and be retried.
 - ZIP-to-ZCTA resolution uses an exact same-number match in the pinned Census release. A full versioned crosswalk is not bundled. Missing ZCTAs remain unresolved.

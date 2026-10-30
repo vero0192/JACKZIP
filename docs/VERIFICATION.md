@@ -1,6 +1,6 @@
 # JACKZIP 5.1.0 verification — 2026-10-30
 
-Status: tested repository release candidate. Automated verification is complete for Chromium. Hardware and manual assistive-technology checks remain open. GitHub CI verification passed; Pages deployment is blocked by a one-time repository setting.
+Status: tested repository release candidate. Automated verification is complete for Chromium. Hardware and manual assistive-technology checks remain open. GitHub CI verification and Pages deployment passed. The deployed HTTPS app passed all 11 live-browser checks.
 
 ## Executed and passed in this continuation
 
@@ -37,7 +37,13 @@ These are endpoint spot checks, not a deployed-browser CORS pass or nationwide c
 
 The full application was pushed to `vero0192/JACKZIP` in commit `4a591a87cbb2758e43d2f4e980955d572d5b2d7f`. [GitHub Actions run 41005946312](https://github.com/vero0192/JACKZIP/actions/runs/41005946312) passed its verification job on Node 22: clean dependency install, eight Node suites, all 55 Chromium/browser checks, site build, and both artifact uploads.
 
-The deployment job failed at `actions/configure-pages` because Pages is not enabled (HTTP 404). The authenticated connection's attempt to enable Pages was rejected with HTTP 403, `Resource not accessible by integration`. The GitHub user must select **GitHub Actions** under [Settings → Pages](https://github.com/vero0192/JACKZIP/settings/pages). Then rerun the failed deployment job and execute the live-origin smoke check. The site currently returns HTTP 404; no live deployment pass is claimed. Machine-readable CI status is in `docs/ci-report.json`.
+The initial deployment attempt failed because Pages was not enabled. After the owner selected GitHub Actions as the Pages source, [attempt 2](https://github.com/vero0192/JACKZIP/actions/runs/41005946312/attempts/2) completed successfully, including verification and deployment. The site is live at **https://vero0192.github.io/JACKZIP/** with HTTPS enforced and application revision `8c23859da380`.
+
+The deployed-origin Chromium smoke check passed all 11 checks with real network responses: HTTP 200, mobile document width, postal/ACS enrichment for `03076` and `10001`, leading zeros and duplicate lineage, no geography conflicts, CSV and TXT downloads, two map coordinates, offline shell, offline parser, and zero uncaught browser errors. Both postal requests and the pinned Census request returned HTTP 200. There were zero failed requests.
+
+Deployed HTML, app/parser/worker modules, and build metadata match the verified repository byte for byte. Repository documentation is excluded from the deployed site artifact (the documentation path returned HTTP 404). The live mobile screenshot was inspected. This remains desktop Chromium verification with a mobile viewport, not a physical-device pass.
+
+Machine-readable evidence is in `docs/ci-report.json` and `docs/live-report.json`.
 
 ## Not executed / not claimed
 

@@ -1,0 +1,66 @@
+{
+  "url": "https://vero0192.github.io/JACKZIP/",
+  "verifiedAt": "2026-10-30T13:41:02.158Z",
+  "browserEngine": "chromium",
+  "browser": "154.0.8037.57",
+  "checks": [
+    "Deployed HTTPS app returns HTTP 200",
+    "Deployed mobile layout has no document overflow",
+    "Live providers enrich two ZIPs without retry failures",
+    "Leading-zero ZIP and duplicate lineage survive live lookup",
+    "No live geography conflict for bare ZIP list",
+    "Live CSV download preserves both ZIPs",
+    "Live TXT download preserves both ZIPs",
+    "Live postal map shows both coordinates",
+    "Deployed service worker serves the app offline",
+    "Deployed offline parser preserves leading zeros",
+    "No uncaught errors on deployed origin"
+  ],
+  "errors": [],
+  "requestFailures": [],
+  "providerResponses": [
+    {
+      "url": "https://api.zippopotam.us/us/03076",
+      "status": 200
+    },
+    {
+      "url": "https://api.zippopotam.us/us/10001",
+      "status": 200
+    },
+    {
+      "url": "https://api.censusreporter.org/1.0/data/show/acs2024_5yr?table_ids=B19013&geo_ids=86000US03076%2C86000US10001",
+      "status": 200
+    }
+  ],
+  "syntheticNetworkFixtures": false,
+  "realDeviceTested": false,
+  "artifactChecks": [
+    {
+      "file": "index.html",
+      "sha256": "c0a48c67b212335400fc1e7765c70a6f6d2faded1fdeacb310c0c1c556cf9ccb",
+      "matchesVerifiedRepository": true
+    },
+    {
+      "file": "app.js",
+      "sha256": "980957ffb54e39990748e1f6a6216626ede8b3091bf3a93b02f7c878e2038d4c",
+      "matchesVerifiedRepository": true
+    },
+    {
+      "file": "parser.js",
+      "sha256": "f22095b88e7b1d3a9f2f2368ec26eea6a26b25cb114eed383dbb0db8a4cc898c",
+      "matchesVerifiedRepository": true
+    },
+    {
+      "file": "sw.js",
+      "sha256": "a484c46df7f6a31fa2c32319a2a9e51ff1f4703796ca018fdbcc4144f856e326",
+      "matchesVerifiedRepository": true
+    },
+    {
+      "file": "BUILD_INFO.json",
+      "sha256": "675721101fcc53cbc175e8e5eff73eba2590078b75d435a01cc97e5aa58aae1b",
+      "matchesVerifiedRepository": true
+    }
+  ],
+  "deployedRevision": "8c23859da380",
+  "deploymentRun": "https://github.com/vero0192/JACKZIP/actions/runs/41005946312/attempts/2"
+}

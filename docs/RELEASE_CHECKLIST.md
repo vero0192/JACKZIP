@@ -27,8 +27,8 @@ Completed evidence is recorded in VERIFICATION.md. Unticked items below are not 
 - [ ] Real Android Chrome and installed PWA
 - [ ] Desktop Safari
 - [ ] Headless desktop Firefox regression suite
-- [ ] Actual GitHub Pages deployment URL and HTTPS
-- [ ] Live-provider behavior on that deployed origin
+- [x] Actual GitHub Pages deployment URL and HTTPS
+- [x] Live-provider behavior on that deployed origin
 - [ ] Screen-reader/device accessibility review beyond automated scanning
 
 No known failing check may be relabeled as a pass. Automated Chromium emulation does not replace hardware tests.
