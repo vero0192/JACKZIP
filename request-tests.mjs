@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {requestSignal,zipStrings} from './request.js';
+assert.deepEqual(zipStrings(['03076','03076','00777']),['03076','00777']);
+for(const bad of [[3076],['3076'],['123456789'],['00000'],['US03076']])assert.throws(()=>zipStrings(bad));
+const parent=new AbortController();let added=0,removed=0;
+const add=parent.signal.addEventListener.bind(parent.signal),remove=parent.signal.removeEventListener.bind(parent.signal);
+parent.signal.addEventListener=(...args)=>{added++;add(...args)};parent.signal.removeEventListener=(...args)=>{removed++;remove(...args)};
+const r=requestSignal(parent.signal,5000);parent.abort();assert.ok(r.signal.aborted);r.cleanup();assert.equal(added,removed);
+const timeout=requestSignal(undefined,1);await new Promise(r=>setTimeout(r,5));assert.ok(timeout.signal.aborted);timeout.cleanup();
+console.log('Request lifetime: PASS (string ZIPs, cancellation, timeout, listener cleanup)');

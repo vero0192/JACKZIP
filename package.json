@@ -1,0 +1,17 @@
+{
+  "name": "jackzip",
+  "version": "5.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:pages": "node scripts/build-pages.mjs",
+    "test": "node parser-tests.mjs && node commands-tests.mjs && node census-tests.mjs && node location-tests.mjs && node export-contract-tests.mjs && node request-tests.mjs && node geo-map-tests.mjs && node static-tests.mjs",
+    "test:browser": "node browser-tests.mjs",
+    "test:live": "node scripts/smoke-live.mjs",
+    "pack:repo": "node scripts/pack.mjs",
+    "test:parser": "node parser-tests.mjs",
+    "test:static": "node static-tests.mjs"
+  },
+  "devDependencies": {"playwright":"1.62.1","axe-core":"4.14.0"},
+  "engines": {"node":">=22"}
+}

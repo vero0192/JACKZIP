@@ -1,0 +1,28 @@
+{
+  "colors": {
+    "void": "#0B0D0F",
+    "graphite": "#111315",
+    "panel": "#171A1E",
+    "bone": "#F1EBDD",
+    "concrete": "#8C908D",
+    "acid": "#DFFF4F",
+    "blue": "#5965FF",
+    "cyan": "#7FE7FF",
+    "coral": "#FF6657",
+    "grid": "#27313A"
+  },
+  "typography": {
+    "display": "Space Grotesk, system sans fallback",
+    "data": "IBM Plex Mono, system monospace fallback"
+  },
+  "grid": {
+    "ui": 32,
+    "marketing": 64
+  },
+  "motion": {
+    "micro": "80-140ms",
+    "panel": "160-220ms",
+    "result": "300-500ms",
+    "intro": "800-1400ms"
+  }
+}

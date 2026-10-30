@@ -1,0 +1,103 @@
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {resolve,extname} from 'node:path';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const engines=process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright'):require('playwright');
+const browserEngine=process.env.QA_BROWSER||'chromium';
+assert.ok(['chromium','firefox','webkit'].includes(browserEngine),'Unsupported QA_BROWSER');
+const root=process.cwd(),out=resolve(root,process.env.QA_OUTPUT||'test-results');await mkdir(out,{recursive:true});
+const mime={'.js':'text/javascript','.css':'text/css','.html':'text/html','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.json':'application/json'};
+let serveLegacyWorker=true;
+const server=createServer(async(req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/jackzip/seed.html'){res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Update fixture</title>');return}
+if(pathname==='/jackzip/sw.js'&&serveLegacyWorker){res.setHeader('Content-Type','text/javascript');res.end(`const C='jackzip-shell-v5-20261027';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.put('./index.html',new Response('<title>Legacy shell</title>',{headers:{'Content-Type':'text/html'}}))).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.mode==='navigate')e.respondWith(caches.open(C).then(c=>c.match('./index.html')))})`);return}
+if(!pathname.startsWith('/jackzip/')){res.writeHead(404).end();return}const p=resolve(root,decodeURIComponent(pathname.slice(9))||'index.html');if(!p.startsWith(root+'/')){res.writeHead(403).end();return}res.setHeader('Content-Type',mime[extname(p)]||'application/octet-stream');res.end(await readFile(p))}catch{res.writeHead(404).end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const url=`http://127.0.0.1:${server.address().port}/jackzip/`;
+const browser=await engines[browserEngine].launch({headless:true,timeout:30000,...(browserEngine==='chromium'?{...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']}:{} )});
+const checks=[],errors=[];const check=(label,value)=>{assert.ok(value,label);checks.push(label)};
+const fixtures={'03076':{state:'NH',place:'Pelham',lat:42.73,lon:-71.32,income:142000},'10001':{state:'NY',place:'New York',lat:40.75,lon:-73.99,income:128000},'60634':{state:'IL',place:'Chicago',lat:41.95,lon:-87.8,income:null}};
+try{
+ const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});context.setDefaultTimeout(30000);let fail=false,delay=0,requests=0,large=false;
+ await context.route('https://api.zippopotam.us/**',async route=>{requests++;if(delay)await new Promise(r=>setTimeout(r,delay));if(fail)return route.abort();const zip=route.request().url().split('/').at(-1),f=fixtures[zip]||(large?{state:'NH',place:'Synthetic fixture',lat:42,lon:-71}:null);await route.fulfill({status:f?200:404,json:f?{'post code':zip,places:[{'place name':f.place,'state abbreviation':f.state,latitude:String(f.lat),longitude:String(f.lon)}]}:{}})});
+ await context.route('https://api.censusreporter.org/**',async route=>{requests++;if(fail)return route.abort();const ids=new URL(route.request().url()).searchParams.get('geo_ids').split(',');const data={};for(const id of ids){const f=fixtures[id.slice(-5)]||(large?{income:100000}:null);if(f)data[id]={B19013:{estimate:{B19013001:f.income},error:{B19013001:f.income===null?null:8000}}}}await route.fulfill({json:{release:{id:'acs2024_5yr'},data}})});
+ const page=await context.newPage();page.on('console',m=>{if(m.type()==='error')console.error(m.text())});page.on('pageerror',e=>{errors.push(e.message);console.error('PAGE ERROR:',e.message)});
+ await page.goto(url);await page.waitForTimeout(1000);
+ await page.screenshot({path:out+'/desktop-home.png',fullPage:true});
+ for(const width of [320,360,375,390,393,414,430,768,1440]){await page.setViewportSize({width,height:900});check('No document overflow at '+width,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));}
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:out+'/mobile-home.png',fullPage:true});
+ await page.fill('#sourceInput','03076\n10001-1234\n60634\n03076');await page.fill('#askInput','rank all');await page.click('#runBtn');await page.waitForFunction(()=>document.querySelector('#flowLive').textContent==='2 RANKED');
+ check('Leading-zero ZIP retained',await page.locator('#heroZip').innerText()==='03076');
+ check('Missing income excluded from ranking',await page.locator('.rank-row').count()===2);
+ check('Missing income stays visible in unresolved',await page.locator('#unresolvedList').innerText().then(t=>t.includes('60634')));
+ check('No processing indicator after completion',await page.locator('#flowSteps article.active').count()===0);
+ const beforeCommand=requests;await page.fill('#askInput','lowest');await page.click('#runBtn');check('Commands reuse canonical data without network',requests===beforeCommand);check('Command updates result selection',await page.locator('#heroZip').innerText()==='10001');await page.fill('#askInput','rank all');await page.click('#runBtn');
+ await page.evaluate(async()=>{const m=await import('./motion.js');m.emitJaxFx(document.querySelector('#jaxFx'),20);m.setMotionEnabled(false)});check('FX off clears interrupted particles',await page.locator('.fx-dot,.spark').count()===0);
+ await page.evaluate(async()=>{(await import('./motion.js')).setMotionEnabled(true)});await page.waitForTimeout(600);check('Result reveal settles at full opacity',await page.locator('#resultHero').evaluate(el=>getComputedStyle(el).opacity)==='1');
+ await page.screenshot({path:out+'/mobile-results.png',fullPage:true});
+ await page.click('[data-view="map"]');check('Map has actual postal points',await page.locator('#mapView circle').count()===2);await page.locator('#mapView button').first().click();check('Map opens matching dossier',await page.locator('#dossierTitle').innerText().then(t=>t.includes('03076')));await page.click('#dossierClose');
+ await page.click('[data-view="table"]');check('Table matches ranked rows',await page.locator('#tableBody tr').count()===2);
+ await page.locator('.command-nav [data-view-jump="home"]').click();check('Home navigation resets workspace selection',await page.locator('.command-nav [data-view-jump="home"]').evaluate(el=>el.classList.contains('active'))&&await page.locator('[data-open-view].active').count()===0);
+ await page.click('[data-view="chart"]');check('Chart matches ranked rows',await page.locator('.chart-row').count()===2);
+ await page.locator('.chart-bar').evaluateAll(async bars=>{await Promise.all(bars.flatMap(bar=>bar.getAnimations().map(a=>a.finished.catch(()=>{}))))});
+ check('Chart bars have real proportional widths',await page.locator('.chart-bar').evaluateAll(b=>b[0].getBoundingClientRect().width>b[1].getBoundingClientRect().width&&b[1].getBoundingClientRect().width>0));
+ const download=page.waitForEvent('download');await page.click('#csvBtn');const d=await download;const csv=await readFile(await d.path(),'utf8');check('CSV includes unresolved and leading zeros',csv.includes('"03076"')&&csv.includes('"60634"')&&!csv.includes('"60634","ZIP 60634","0"'));
+ await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedRows=text}}}));
+ await page.fill('#askInput','copy top 1');await page.click('#runBtn');
+ check('Copy command includes selected rows and canonical unresolved records',await page.evaluate(()=>window.copiedRows.includes('03076')&&window.copiedRows.includes('60634')&&!window.copiedRows.includes('10001')));
+ await page.evaluate(()=>delete navigator.clipboard);await page.fill('#askInput','rank all');await page.click('#runBtn');
+ await page.click('#stackBtn');check('Stack moves focus inside dialog',await page.locator('#stackClose').evaluate(el=>el===document.activeElement));await page.screenshot({path:out+'/mobile-stack.png',fullPage:true});await page.keyboard.press('Escape');check('Stack restores focus',await page.locator('#stackBtn').evaluate(el=>el===document.activeElement));
+ await page.click('#vipBtn');await page.locator('#vipDialog [value="cancel"]').click();check('VIP close works',!(await page.locator('#vipDialog').evaluate(el=>el.open)));
+ await page.click('#vipBtn');await page.click('#vipSubmit');check('VIP is cosmetic presentation',await page.locator('html').evaluate(el=>el.classList.contains('vip-mode')));
+ await page.emulateMedia({reducedMotion:'reduce'});check('Reduced motion disables CSS animation',await page.locator('#jaxHero').evaluate(el=>getComputedStyle(el).animationName)==='none');
+ await page.fill('#sourceInput','10001');check('Edited input hides stale results',await page.locator('#resultsSection').evaluate(el=>el.classList.contains('hidden')));
+ const unexpectedDownload=()=>{throw Error('Stale data exported after input edit')};page.once('download',unexpectedDownload);await page.click('#navExport');await page.waitForTimeout(100);page.off('download',unexpectedDownload);check('Editing input prevents stale export',await page.locator('#toast').innerText().then(t=>t.includes('Nothing')));
+ await page.evaluate(async()=>{(await import('./location.js')).clearLocationCache()});delay=500;await page.click('#runBtn');await page.waitForFunction(()=>document.querySelector('#jaxStateText').textContent==='MATCHING');await page.click('#runBtn');await page.waitForTimeout(500);check('Cancelled requests cannot restart progress',await page.locator('#flowLive').innerText()==='READY');delay=0;
+ await page.evaluate(async()=>{(await import('./location.js')).clearLocationCache()});fail=true;await page.click('#runBtn');await page.waitForFunction(()=>!document.querySelector('#runBtn').classList.contains('cancel'));check('Failure retains extracted ZIP',await page.inputValue('#sourceInput')==='10001');check('Failed lookup is retryable',await page.locator('#retryBtn').isVisible());fail=false;await page.click('#retryBtn');await page.waitForFunction(()=>document.querySelector('#flowLive').textContent==='1 RANKED');check('Retry recovers results',await page.locator('#heroZip').innerText()==='10001');
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(async()=>{(await import('./motion.js')).setMotionEnabled(true)});
+ await page.fill('#sourceInput','FL ZIP: 03076');await page.click('#runBtn');await page.waitForFunction(()=>document.querySelector('#flowLive').textContent==='1 RANKED');check('Source/provider conflict remains visible',await page.locator('#unresolvedList').innerText().then(t=>t.includes('conflicts')));check('Conflict never rewrites source',await page.inputValue('#sourceInput')==='FL ZIP: 03076');
+ const requestsBeforeSensitive=requests;await page.fill('#sourceInput','password: synthetic-test-only');await page.click('#runBtn');check('Sensitive evidence stops external requests',requests===requestsBeforeSensitive&&await page.locator('#toast').innerText().then(t=>t.includes('Stopped')));
+ await page.locator('#fileInput').setInputFiles({name:'synthetic.txt',mimeType:'text/plain',buffer:Buffer.from('03076\n10001')});await page.waitForFunction(()=>document.querySelector('#readyCount').textContent==='2 ready');check('TXT upload populates local parser',await page.inputValue('#sourceInput')==='03076\n10001');
+ const tableInput='"city","state","zip","order"\n"Pelham, district",NH,"03076",12345\n"New York",NY,"10001",67890';
+ await page.locator('#fileInput').setInputFiles({name:'synthetic.csv',mimeType:'text/csv',buffer:Buffer.from(tableInput)});
+ await page.waitForFunction(()=>document.querySelector('#readyCount').textContent==='2 ready');
+ check('Quoted CSV isolates ZIP column from order identifiers',await page.inputValue('#sourceInput')===tableInput&&await page.locator('#candidateCount').innerText()==='2 ZIPs');
+ await page.click('#runBtn');await page.waitForFunction(()=>document.querySelector('#flowLive').textContent==='2 RANKED');
+ check('Independent CSV states do not create false conflicts',await page.locator('#unresolvedWrap').evaluate(el=>el.classList.contains('hidden')));
+ await page.locator('#fileInput').setInputFiles({name:'unsupported.pdf',mimeType:'application/pdf',buffer:Buffer.from('03076')});check('Unsupported file format is rejected',await page.locator('#toast').innerText().then(t=>t.includes('TXT or CSV')));
+ large=true;await page.fill('#sourceInput',Array.from({length:125},(_,i)=>String(30000+i)).join('\n'));await page.fill('#askInput','rank all');await page.click('#runBtn');await page.waitForFunction(()=>document.querySelector('#flowLive').textContent==='125 RANKED');check('Large results page contains bounded rows',await page.locator('.rank-row').count()===50);await page.click('#nextPage');check('Page navigation exposes later rows',await page.locator('#pageStatus').innerText().then(t=>t.includes('PAGE 2 / 3')));
+ const allDownload=page.waitForEvent('download');await page.click('#csvBtn');check('Pagination never truncates CSV',(await readFile(await (await allDownload).path(),'utf8')).trim().split('\r\n').length===126);
+ await page.setViewportSize({width:320,height:740});check('Results fit small mobile width',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.click('#stackBtn');check('Stack fits small mobile width',await page.locator('#stackOverlay').evaluate(el=>el.scrollWidth<=el.clientWidth));await page.keyboard.press('Escape');
+ await page.setViewportSize({width:1440,height:1000});await page.click('[data-view="map"]');await page.locator('#resultsSection').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/desktop-map.png',fullPage:true});
+ const axePath=process.env.AXE_PATH||require.resolve('axe-core/axe.min.js');await page.addScriptTag({path:axePath});
+ const accessibility=[];
+ async function audit(name){const result=await page.evaluate(async()=>await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));accessibility.push({name,violations:result.violations});console.log('ACCESSIBILITY',name,result.violations.map(v=>({id:v.id,nodes:v.nodes.length})))}
+ await audit('map');await page.click('[data-view="table"]');await audit('table');await page.click('[data-view="chart"]');await audit('chart');await page.click('[data-view="stack"]');await audit('stack-list');
+ await page.click('#settingsBtn');await audit('settings');await page.locator('#settingsDialog button[aria-label="Close"]').click();
+ await page.click('#vipBtn');await audit('vip');await page.locator('#vipDialog [value="cancel"]').click();
+ await page.click('#stackBtn');await audit('immersive-stack');await page.keyboard.press('Escape');
+ await page.locator('[data-dossier]').first().click();await audit('dossier');await page.click('#dossierClose');
+ await writeFile(out+'/accessibility.json',JSON.stringify(accessibility,null,2));
+ check('Automated accessibility checks pass across eight app surfaces',accessibility.every(a=>a.violations.length===0));
+ check('No broken images',await page.locator('img').evaluateAll(imgs=>imgs.every(i=>i.complete&&i.naturalWidth>0)));
+ check('No uncaught browser errors',errors.length===0);
+ await context.close();
+ const offlineContext=await browser.newContext();offlineContext.setDefaultTimeout(30000);const offlinePage=await offlineContext.newPage();await offlinePage.goto(url+'seed.html');
+ await offlinePage.evaluate(async()=>{await (await caches.open('unrelated-app-cache')).put('/unrelated/',new Response('keep'));await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});await navigator.serviceWorker.ready});
+ await offlinePage.waitForFunction(async()=>(await navigator.serviceWorker.getRegistration())?.active?.state==='activated');await offlinePage.reload();check('Legacy shell fixture controls page',await offlinePage.title()==='Legacy shell');
+ serveLegacyWorker=false;
+ await offlinePage.evaluate(async()=>{
+  const reg=await navigator.serviceWorker.getRegistration();
+  await new Promise((resolve,reject)=>{
+   reg.addEventListener('updatefound',()=>{
+    const worker=reg.installing;
+    const observe=()=>{if(worker.state==='activated')resolve();if(worker.state==='redundant')reject(new Error('Updated worker became redundant'))};
+    worker.addEventListener('statechange',observe);observe();
+   },{once:true});
+   reg.update().catch(reject);
+  });
+ });
+ await offlinePage.reload();check('Update removes obsolete app cache only',await offlinePage.evaluate(async()=>{const keys=await caches.keys();return !keys.includes('jackzip-shell-v5-20261027')&&keys.includes('unrelated-app-cache')}));
+ await offlinePage.reload();await offlineContext.setOffline(true);await offlinePage.reload();check('PWA offline shell loads at repository subpath',await offlinePage.title()==='JACKZIP');await offlinePage.fill('#sourceInput','03076');await offlinePage.waitForTimeout(200);check('Offline parser remains usable',await offlinePage.locator('#readyCount').innerText()==='1 ready');await offlineContext.close();
+ await writeFile(out+'/browser-report.json',JSON.stringify({browserEngine,browser:await browser.version(),checks,errors,syntheticNetworkFixtures:true,realDeviceTested:false},null,2));console.log(JSON.stringify({passed:checks.length,checks,errors},null,2));
+}finally{await browser.close();server.close()}

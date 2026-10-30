@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {makeCsv,makeTxt} from './export.js';
+const rows=[{zip:'03076',rank:1,estimate:142000,moe:8000,occurrenceCount:2,zcta:'03076',sourceLines:[1,4],contextStatus:'AGREES',lookupStatus:'SUCCESS'},{zip:'10001',rank:null,estimate:null,moe:null,sourceLines:[2],acsStatus:'NO_VALUE',lookupStatus:'SUCCESS',resolvedPlaceLabel:'=CMD()'}];
+const meta={year:'2024'};
+const csv=makeCsv(rows,meta),txt=makeTxt(rows,meta);
+assert.ok(csv.includes('"03076"'));
+assert.ok(csv.includes('"10001","\'=CMD()","",""'));
+assert.ok(csv.includes('"1 | 4"'));
+assert.ok(txt.includes('--  10001  Unavailable'));
+assert.ok(txt.includes('MOE: $8,000'));
+assert.ok(txt.includes('ACS: NO_VALUE'));
+assert.ok(txt.includes('Source lines: 1, 4'));
+console.log('Export contract: PASS (leading zeros, missing values, statuses, MOE, formula safety, lineage)');

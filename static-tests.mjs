@@ -1,0 +1,23 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+const root=process.cwd();
+const read=f=>fs.readFileSync(path.join(root,f),"utf8");
+const html=read("index.html"), css=read("jackzip.css"), app=read("app.js"), census=read("census.js"), sw=read("sw.js"), manifest=JSON.parse(read("manifest.webmanifest"));
+assert.ok(/JAX HUNTS THE ZIPs\./.test(html),"Current public product line missing");
+assert.ok(/ASK JAX/.test(html),"Ask JAX missing");
+for(const label of ["STACK","TABLE","CHART","MAP","VIP PRESENTATION","ZIP DOSSIER"])assert.ok(html.includes(label),`${label} missing`);
+const privatePattern=new RegExp('\\bF'+'1\\b|F'+'1[-_ ]','i');assert.ok(!privatePattern.test([html,css,app,census,sw,JSON.stringify(manifest)].join('\n')),'Private governance identity leaked into public app');
+const legacyBrand='JACKZIP'+'_';assert.ok(![html,css,app,census,sw,JSON.stringify(manifest)].join('\n').includes(legacyBrand),'Legacy underscore brand leaked into public app');
+assert.equal(manifest.name,"JACKZIP");assert.equal(manifest.start_url,"./");assert.equal(manifest.scope,"./");
+assert.ok(census.includes('acs2024_5yr'),"ACS release is not pinned to 2024 5-year");
+const refs=[...html.matchAll(/(?:src|href)="\.\/([^"?#]+)"/g)].map(m=>m[1]);
+for(const ref of refs)assert.ok(fs.existsSync(path.join(root,ref)),`Missing referenced file: ${ref}`);
+for(const ref of [...sw.matchAll(/"\.\/([^\"]+)"/g)].map(m=>m[1]))assert.ok(fs.existsSync(path.join(root,ref)),`Missing cached resource: ${ref}`);
+for(const file of fs.readdirSync(root).filter(f=>f.endsWith('.js'))){for(const match of read(file).matchAll(/from\s+["']\.\/([^"']+)["']/g))assert.ok(fs.existsSync(path.join(root,match[1])),`Missing module imported by ${file}: ${match[1]}`)}
+for(const match of read('release.css').matchAll(/url\(['"]\.\/([^'"]+)['"]\)/g))assert.ok(fs.existsSync(path.join(root,match[1])),`Missing CSS asset: ${match[1]}`);
+assert.ok(!/VIP_USER|VIP_PASS|String\.fromCharCode/.test(app),'Private access implementation is not permitted in public app');
+for(const f of ["app.js","parser.js","census.js","location.js","commands.js","export.js","motion.js","assets/brand/jz-star.svg","assets/jax/jax-master.svg"])assert.ok(sw.includes(`./${f}`),`SW shell missing ${f}`);
+assert.ok(/prefers-reduced-motion/.test(css),"Reduced-motion CSS missing");
+assert.ok(/stack-card/.test(css)&&/chart-row/.test(css),"Result view styling missing");
+console.log("static package tests: PASS");

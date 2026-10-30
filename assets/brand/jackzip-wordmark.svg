@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260">
+<rect width="1200" height="260" fill="none"/>
+<g transform="translate(28 42)">
+ <text x="0" y="132" font-family="Space Grotesk,Arial,sans-serif" font-weight="800" font-size="142" letter-spacing="-8" fill="#F1EBDD">JACK</text>
+ <text x="425" y="132" font-family="Space Grotesk,Arial,sans-serif" font-weight="800" font-size="142" letter-spacing="-8" fill="#DFFF4F">ZIP</text>
+ <path d="M 866 18 l 42 0 l -21 24 z" fill="#7FE7FF" opacity=".9"/>
+ <text x="4" y="184" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="24" letter-spacing="9" fill="#8C908D">ZIP INTELLIGENCE SYSTEM</text>
+</g></svg>

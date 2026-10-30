@@ -1,0 +1,24 @@
+{
+  "product": "JACKZIP",
+  "version": "5.1.0",
+  "status": "repository-release-candidate",
+  "buildDate": "2026-10-30",
+  "character": "JAX",
+  "symbol": "JZ STAR",
+  "visualSystem": "JZ GRID",
+  "acs": {
+    "vintage": "2024 ACS 5-Year",
+    "table": "B19013",
+    "estimate": "B19013_001E",
+    "moe": "B19013_001M",
+    "runtimeRelease": "acs2024_5yr",
+    "sourceMode": "PINNED_RELAY"
+  },
+  "runtime": {
+    "rawInput": "browser-local",
+    "acsEnrichment": "network-required",
+    "postalLabels": "network-required",
+    "pwaShell": "cacheable"
+  },
+  "revision": "8c23859da380"
+}

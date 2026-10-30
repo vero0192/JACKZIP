@@ -1,0 +1,34 @@
+[
+  {
+    "name": "map",
+    "violations": []
+  },
+  {
+    "name": "table",
+    "violations": []
+  },
+  {
+    "name": "chart",
+    "violations": []
+  },
+  {
+    "name": "stack-list",
+    "violations": []
+  },
+  {
+    "name": "settings",
+    "violations": []
+  },
+  {
+    "name": "vip",
+    "violations": []
+  },
+  {
+    "name": "immersive-stack",
+    "violations": []
+  },
+  {
+    "name": "dossier",
+    "violations": []
+  }
+]

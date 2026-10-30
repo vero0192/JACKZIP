@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0B0D0F">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="JACKZIP — privacy-conscious U.S. ZIP geographic intelligence. Drop the mess. JAX hunts the ZIPs.">
+  <title>JACKZIP</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/brand/jz-star.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="stylesheet" href="./jackzip.css">
+  <link rel="stylesheet" href="./release.css">
+</head>
+<body>
+  <div id="boot" class="boot" aria-hidden="true">
+    <div class="boot-grid"></div>
+    <img src="./assets/brand/jz-star.svg" alt="" class="boot-star">
+    <div class="boot-mark">JACK<span>ZIP</span></div>
+    <div class="boot-copy">PRIVATE GEOGRAPHIC INTELLIGENCE / JAX ONLINE</div>
+  </div>
+
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="JACKZIP home">JACK<span>ZIP</span></a>
+      <nav class="desktop-nav" aria-label="Primary">
+        <button class="nav-btn active" type="button" data-view-jump="home">HOME</button>
+        <button class="nav-btn" type="button" data-open-view="stack">STACK</button>
+        <button class="nav-btn" type="button" data-open-view="table">TABLE</button>
+        <button class="nav-btn" type="button" data-open-view="chart">CHART</button>
+      </nav>
+      <div class="top-actions">
+        <span id="connectionPill" class="pill"><i></i> READY</span>
+        <button id="vipBtn" class="vip-chip" type="button"><img src="./assets/brand/jz-star-vip.svg" alt=""> VIP</button>
+        <button id="motionBtn" class="icon-btn text-btn" type="button" aria-label="Toggle motion" aria-pressed="true">FX</button>
+        <button id="settingsBtn" class="icon-btn" type="button" aria-label="Open data information">•••</button>
+      </div>
+    </header>
+
+    <nav class="command-nav" aria-label="Workspace"><button data-view-jump="home">HOME</button><button id="navPaste">PASTE</button><button id="navAnalyze">ANALYZE</button><button data-open-view="stack">STACK</button><button data-open-view="table">TABLE</button><button data-open-view="chart">CHART</button><button data-open-view="map">MAP</button><button id="navExport">EXPORT</button><button id="navSettings">SETTINGS</button></nav><main id="home">
+      <section class="command-deck" aria-labelledby="heroTitle">
+        <div class="deck-copy">
+          <div class="eyebrow" id="greeting">JAX IS UP</div>
+          <h1 id="heroTitle"><span>DROP THE MESS.</span><br>JAX HUNTS THE ZIPs.</h1>
+          <p class="lede">Paste tables, addresses, broken columns, ZIP lists, CSV junk, OCR text, copied website data, or chaotic text. JAX separates geographic signal from numeric noise and keeps the weird stuff visible.</p>
+
+          <div class="trust-row" aria-label="Input handling">
+            <span>MESSY TEXT WELCOME</span><span>LEADING ZEROS LOCKED</span><span>CONTEXT CHECKED</span>
+          </div>
+
+          <div class="input-panel" id="inputPanel">
+            <div class="panel-label-row">
+              <label for="sourceInput">PASTE SOURCE</label>
+              <span id="candidateCount" class="mini-state">0 ZIPs</span>
+            </div>
+            <textarea id="sourceInput" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="City, State, ZIP&#10;Pelham, NH, 03076&#10;&#10;...or paste the ugly version. JAX can work from that."></textarea>
+            <div class="input-footer">
+              <div class="file-actions">
+                <label class="ghost-btn upload-btn" for="fileInput">UPLOAD TXT/CSV</label>
+                <input id="fileInput" type="file" accept=".txt,.csv,text/plain,text/csv" class="file-picker" aria-label="Upload TXT or CSV">
+                <button id="pasteBtn" class="ghost-btn" type="button">PASTE</button>
+                <button id="clearBtn" class="ghost-btn" type="button">CLEAR</button>
+              </div>
+              <div class="parse-stats" aria-live="polite">
+                <span id="readyCount">0 ready</span><span id="reviewCount">0 review</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ask-row">
+            <div class="ask-wrap"><label for="askInput">ASK JAX</label><input id="askInput" type="text" placeholder="rank all / top 10 / above 100k / compare 03076 92201" autocomplete="off"></div>
+            <button id="runBtn" class="run-btn" type="button">RUN <span>→</span></button>
+          </div>
+          <div class="quick-commands" aria-label="Quick commands">
+            <button type="button" data-command="highest income">HIGHEST</button><button type="button" data-command="lowest income">LOWEST</button><button type="button" data-command="top 10">TOP 10</button><button type="button" data-command="rank all">RANK ALL</button>
+          </div>
+        </div>
+
+        <aside class="jax-stage" id="jaxStage" aria-label="JAX operator status">
+          <div class="jz-grid" aria-hidden="true"></div><div class="signal-orbit orbit-a" aria-hidden="true"></div><div class="signal-orbit orbit-b" aria-hidden="true"></div>
+          <img id="jaxHero" src="./assets/jax/jax-current.png" alt="JAX, JACKZIP's geographic data operator">
+          <div id="jaxFx" class="jax-fx" aria-hidden="true"></div>
+          <div class="speech" id="jaxSpeech">drop it.<br><strong>i got you.</strong></div>
+          <div class="jax-status-card"><div><span>JAX</span><small>GEO OPERATOR</small></div><b id="jaxStateText">READY</b></div>
+          <div class="system-mini"><span>U.S. ZIP INTELLIGENCE</span><b>ZIP · ZIP+4 · ZCTA · ACS</b><small id="networkStatus" role="status">CHECKING NETWORK</small><small>2024 ACS 5-YEAR PINNED</small></div>
+        </aside>
+      </section>
+
+      <section class="telemetry" aria-labelledby="flowTitle">
+        <div class="section-head"><div><span class="eyebrow">LIVE PIPELINE</span><h2 id="flowTitle">FROM MESS TO RESULTS.</h2></div><span id="flowLive" class="section-note" aria-live="polite">READY</span></div>
+        <div class="flow-steps" id="flowSteps">
+          <article data-step="extract"><span>01</span><b>READ</b><small>structure + candidates</small><i></i></article>
+          <article data-step="match"><span>02</span><b>VERIFY</b><small>postal + context</small><i></i></article>
+          <article data-step="analyze"><span>03</span><b>ACS</b><small>2024 B19013</small><i></i></article>
+          <article data-step="rank"><span>04</span><b>RANK</b><small>organized results</small><i></i></article>
+          <article data-step="done"><span>05</span><b>DONE</b><small>views + export</small><i></i></article>
+        </div>
+        <div class="summary-grid" id="summaryGrid" aria-live="polite">
+          <div><small>OCCURRENCES</small><strong id="metricOccurrences">0</strong></div><div><small>UNIQUE ZIPs</small><strong id="metricUnique">0</strong></div><div><small>REVIEW</small><strong id="metricReview">0</strong></div><div><small>RANGES</small><strong id="metricRanges">0</strong></div><div><small>CONFLICTS</small><strong id="metricConflicts">0</strong></div>
+        </div>
+      </section>
+
+      <section id="reviewSection" class="review-section hidden">
+        <button id="reviewToggle" class="review-toggle" type="button"><span>REVIEW QUEUE</span><strong id="reviewBadge">0</strong></button><div id="reviewList" class="review-list hidden"></div>
+      </section>
+
+      <section id="resultsSection" class="results-section hidden" aria-live="polite">
+        <div class="result-toolbar">
+          <div><span class="eyebrow">CANONICAL RESULTS</span><h2>YOUR ZIP RESULTS.</h2></div>
+          <div class="view-tabs" role="group" aria-label="Result views"><button type="button" data-view="stack" class="active">STACK</button><button type="button" data-view="table">TABLE</button><button type="button" data-view="chart">CHART</button><button type="button" data-view="map">MAP</button></div>
+        </div>
+
+        <div class="result-hero" id="resultHero">
+          <div id="resultSparks" class="result-sparks" aria-hidden="true"></div>
+          <div class="result-kicker" id="resultKicker">HIGHEST FOUND</div>
+          <div class="result-mainline"><div><div class="hero-zip" id="heroZip">—</div><div class="hero-name" id="heroName">—</div></div><div class="hero-income" id="heroIncome">—</div></div>
+          <div class="result-meta"><span id="matchMeta">0 / 0 MATCHED</span><span id="answerMeta">2024 ACS 5-YEAR · B19013</span></div>
+          <img class="hero-jax-mini" src="./assets/jax/jax-current.png" alt="" aria-hidden="true"><div class="found-bubble" id="foundBubble">found it.</div>
+        </div>
+
+        <div id="stackView" class="view-panel active" ><div id="leaderboard" class="leaderboard"></div></div>
+        <div id="tableView" class="view-panel" ><div class="table-scroll"><table><thead><tr><th>Rank</th><th>ZIP</th><th>Place / State</th><th>Median household income</th><th>MOE</th><th>Occurrences</th><th>Status</th></tr></thead><tbody id="tableBody"></tbody></table></div></div>
+        <div id="chartView" class="view-panel" ><div class="chart-controls"><button type="button" data-chart-limit="10" class="active">TOP 10</button><button type="button" data-chart-limit="25">25</button><button type="button" data-chart-limit="50">50</button><button type="button" data-chart-limit="all">ALL</button></div><div id="chartList" class="chart-list"></div></div>
+
+        <div id="mapView" class="view-panel"></div>
+        <div class="page-controls"><button id="prevPage" type="button" disabled>← PREVIOUS</button><span id="pageStatus" role="status"></span><button id="nextPage" type="button" disabled>NEXT →</button></div>
+        <p class="area-note">Area-level median household income · 2024 ACS 5-Year · Census ZCTAs differ from postal ZIPs. Values do not describe individuals.</p>
+        <p class="area-note">Views show 50 results per page. CSV and TXT include all command-selected ranked results plus canonical unresolved records. The parser review queue remains available above.</p>
+        <div class="result-actions"><button id="stackBtn" type="button">IMMERSIVE STACK</button><button id="copyBtn" type="button">COPY</button><button id="csvBtn" type="button">CSV</button><button id="txtBtn" type="button">TXT</button><button id="retryBtn" class="hidden" type="button">RETRY FAILED</button></div>
+        <div id="unresolvedWrap" class="unresolved-wrap hidden"><button id="unresolvedToggle" type="button" class="unresolved-toggle">UNRESOLVED / REVIEW <strong id="unresolvedCount">0</strong></button><div id="unresolvedList" class="unresolved-list hidden"></div></div>
+      </section>
+    </main>
+
+    <footer><span>JACKZIP / PRIVATE GEO UTILITY</span><span id="footerData">2024 ACS 5-YEAR • ZCTA • RAW INPUT LOCAL</span></footer>
+  </div>
+
+  <dialog id="settingsDialog" class="modal-card" aria-labelledby="settingsTitle">
+    <form method="dialog"><div class="dialog-head"><div><span class="eyebrow">DATA / PRIVACY</span><h2 id="settingsTitle">JACKZIP STATUS</h2></div><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
+      <div class="field"><span>ACS BASELINE</span><strong id="dataReleaseValue">2024 ACS 5-Year</strong><small>Detailed Table B19013. Estimate B19013_001E. MOE B19013_001M. The runtime relay is pinned to the 2024 5-year release and refuses release drift.</small></div>
+      <div class="field"><span>SOURCE MODE</span><strong>PINNED 2024 RELAY</strong><small>Only ZIP/ZCTA identifiers are requested. Raw pasted text stays in the browser. Census Reporter relays U.S. Census Bureau ACS data.</small></div>
+      <div class="field"><span>LOCATION LABELS</span><strong>SUPPLEMENTAL POSTAL LABEL</strong><small>Place/state labels come from Zippopotam.us / GeoNames and remain separate from Census ZCTA statistical geography.</small></div>
+      <div class="field"><span>MOTION</span><div class="toggle-line"><strong>JAX ANIMATIONS</strong><button id="motionDialogBtn" class="toggle-btn" type="button" aria-pressed="true">ON</button></div><small>Reduced-motion preference is respected.</small></div>
+      <div class="dialog-actions"><a class="ghost-btn" href="https://data.census.gov/table/ACSDT5Y2024.B19013" target="_blank" rel="noopener">B19013 ↗</a><button id="saveSettingsBtn" class="run-btn small" value="default">DONE</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="vipDialog" class="modal-card vip-modal" aria-labelledby="vipTitle">
+    <form id="vipForm" method="dialog" autocomplete="off"><div class="dialog-head"><div><span class="eyebrow">JZ GRID / PRESENTATION</span><h2 id="vipTitle">VIP PRESENTATION</h2></div><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
+      <div class="vip-star-wrap"><img src="./assets/brand/jz-star-vip.svg" alt="JZ VIP star"><p>Optional visual presentation. VIP mode never changes parsing, Census values, ranking, unresolved records, or exports.</p></div>
+      <div id="vipMessage" class="vip-message" aria-live="polite">STANDARD PRESENTATION</div>
+      <div class="dialog-actions"><button id="vipSignOut" class="ghost-btn hidden" type="button">EXIT VIP</button><button id="vipSubmit" class="run-btn small" type="submit">ENTER GRID</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dossierDialog" class="modal-card dossier-modal" aria-labelledby="dossierTitle">
+    <div class="dialog-head"><div><span class="eyebrow">ZIP DOSSIER</span><h2 id="dossierTitle">—</h2></div><button id="dossierClose" class="icon-btn" type="button" aria-label="Close dossier">×</button></div><div id="dossierBody" class="dossier-body"></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="stackOverlay" class="stack-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="stackTitle">
+    <div class="stack-topbar"><div><span class="brand small">JACK<span>ZIP</span></span><small id="stackTitle">STACK MODE</small></div><div class="stack-progress" id="stackProgress">01 / 01</div><button id="stackClose" class="icon-btn" type="button" aria-label="Close Stack mode">×</button></div><div id="stackCards" class="stack-cards"></div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
