@@ -1,6 +1,6 @@
 # JACKZIP 5.1.0 verification — 2026-10-30
 
-Status: tested repository release candidate. Automated verification is complete for Chromium. Hardware and manual assistive-technology checks remain open. Hosting evidence will be added after deployment.
+Status: tested repository release candidate. Automated verification is complete for Chromium. Hardware and manual assistive-technology checks remain open. GitHub CI verification passed; Pages deployment is blocked by a one-time repository setting.
 
 ## Executed and passed in this continuation
 
@@ -35,7 +35,9 @@ These are endpoint spot checks, not a deployed-browser CORS pass or nationwide c
 
 ## Deployment
 
-The repository includes verification-gated GitHub Actions deployment and a dedicated static artifact builder. A successful upload is not proof of a successful Pages deployment. Deployment and live-origin evidence are pending at this checkpoint.
+The full application was pushed to `vero0192/JACKZIP` in commit `4a591a87cbb2758e43d2f4e980955d572d5b2d7f`. [GitHub Actions run 41005946312](https://github.com/vero0192/JACKZIP/actions/runs/41005946312) passed its verification job on Node 22: clean dependency install, eight Node suites, all 55 Chromium/browser checks, site build, and both artifact uploads.
+
+The deployment job failed at `actions/configure-pages` because Pages is not enabled (HTTP 404). The authenticated connection's attempt to enable Pages was rejected with HTTP 403, `Resource not accessible by integration`. The GitHub user must select **GitHub Actions** under [Settings → Pages](https://github.com/vero0192/JACKZIP/settings/pages). Then rerun the failed deployment job and execute the live-origin smoke check. The site currently returns HTTP 404; no live deployment pass is claimed. Machine-readable CI status is in `docs/ci-report.json`.
 
 ## Not executed / not claimed
 
@@ -43,6 +45,7 @@ The repository includes verification-gated GitHub Actions deployment and a dedic
 - iOS Safari keyboard, clipboard, or downloads
 - Add to Home Screen and installed standalone safe areas on hardware
 - Desktop Safari
+- Firefox: downloaded successfully, but launch attempts timed out in this executor with sandbox/graphics errors before the app loaded; this is not a Firefox application pass
 - Comprehensive manual screen-reader testing
 - Full national ZIP/ZCTA coverage certification
 - Secure VIP authentication

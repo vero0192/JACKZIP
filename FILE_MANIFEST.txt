@@ -50,6 +50,7 @@ docs/VERIFICATION.md
 docs/VIP.md
 docs/accessibility-report.json
 docs/browser-report.json
+docs/ci-report.json
 export-contract-tests.mjs
 export.js
 favicon.svg

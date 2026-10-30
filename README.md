@@ -1,6 +1,6 @@
 # JACKZIP 5.1.0
 
-[Website](https://vero0192.github.io/JACKZIP/) · [Verification and deployment](https://github.com/vero0192/JACKZIP/actions) · [Release evidence](docs/VERIFICATION.md)
+[Pages URL](https://vero0192.github.io/JACKZIP/) · [Verification and deployment](https://github.com/vero0192/JACKZIP/actions) · [Release evidence](docs/VERIFICATION.md)
 
 DROP THE MESS. JAX HUNTS THE ZIPs.
 

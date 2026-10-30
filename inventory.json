@@ -29,7 +29,7 @@
     },
     {
       "file": "FILE_MANIFEST.txt",
-      "sha256": "6d0104bfc68da74fc932cf028c5483dbe559b808a8434d7c8328cfc1483bda91"
+      "sha256": "a91820a0584c98c257703a4db31c2ce91803bcedaf8dab1e83b54ccdfb00d674"
     },
     {
       "file": "MOBILE_UPDATE.md",
@@ -37,7 +37,7 @@
     },
     {
       "file": "README.md",
-      "sha256": "87ae904e2310a2004e40988008e5a97c1b1ed86f4f8c02131843868f89bcf952"
+      "sha256": "0521cc660b84420fa48ca9175d9013a4b1f94042fb9afc7115904dcb0c52917e"
     },
     {
       "file": "app.js",
@@ -161,7 +161,7 @@
     },
     {
       "file": "docs/CONTINUE.md",
-      "sha256": "19977569ca2b77359c72445be3134e4c7551e900d25314a722ad95328ded4c70"
+      "sha256": "9ba568d798e3b3b46b9c3a0c71121560f111e34f253cdbfc32ae0eb422adf498"
     },
     {
       "file": "docs/DEPLOY_GITHUB.md",
@@ -169,7 +169,7 @@
     },
     {
       "file": "docs/KNOWN_LIMITATIONS.md",
-      "sha256": "ca602fca3e5c57cf1e8d06671df368c1784f1bc138e060f5bc240157ba8389dd"
+      "sha256": "baa3f1879a2a98672a2d820818aa033e0086f507b99fe8b109fbf2b12e8e3964"
     },
     {
       "file": "docs/MOTION.md",
@@ -193,7 +193,7 @@
     },
     {
       "file": "docs/VERIFICATION.md",
-      "sha256": "51ab59b0942d383cdf31835c20b9e556659a6b4657fde8da73e124ff6e062f53"
+      "sha256": "2e2d470fa25c69b0254a67e87a42af7949ffd63d153f8f3b30242f485a961dea"
     },
     {
       "file": "docs/VIP.md",
@@ -206,6 +206,10 @@
     {
       "file": "docs/browser-report.json",
       "sha256": "4c07ceac1a24149ead07c3e266796bdb4b12866524d6482f12d104894b2f1121"
+    },
+    {
+      "file": "docs/ci-report.json",
+      "sha256": "cf34faab6c22132bf14d2be6057e230919ad3a83b0b3d2bad5ccd6c1bd67c4f6"
     },
     {
       "file": "export-contract-tests.mjs",

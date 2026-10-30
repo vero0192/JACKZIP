@@ -1,0 +1,12 @@
+{
+  "runUrl": "https://github.com/vero0192/JACKZIP/actions/runs/41005946312",
+  "runId": 41005946312,
+  "commit": "4a591a87cbb2758e43d2f4e980955d572d5b2d7f",
+  "verifiedAt": "2026-10-30",
+  "verification": "success",
+  "deployment": "failure",
+  "deploymentReason": "Pages is not enabled; configure-pages returned HTTP 404",
+  "enablingAttempt": "HTTP 403: Resource not accessible by integration",
+  "node": "22",
+  "browserChecks": 55
+}
