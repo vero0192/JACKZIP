@@ -63,6 +63,29 @@ assert.equal(z("abc37122").ready.length,0);assert.equal(z("abc37122").review[0].
 assert.equal(z("90008%").ready.length,0);
 assert.equal(z("Pelham (03076)").ready[0].zip,"03076");
 
+// Mixed-input regression: source identifiers must not masquerade as ZIP geography.
+const chaotic=z([
+  "Order #482910 | Customer A | $450.66",
+  "Pelham NH 03076 - shipment delivered",
+  "Phone: 212-555-0198",
+  "Account 9834561823 | ref 72910",
+  "Brooklyn NY 11211 | Qty 12 | $89.95",
+  "Nashville Tennessee 37211",
+  "Invoice 45066 / Date 11-22-2026",
+  "ZIP: 10001 | New York, NY",
+  "Tracking ID 7438291902245"
+].join("\n"));
+assert.deepEqual(chaotic.ready.map(x=>x.zip),["03076","11211","37211","10001"]);
+assert.deepEqual(chaotic.ready.map(x=>x.lines),[[2],[5],[6],[8]]);
+assert.ok(chaotic.ignored.some(x=>x.token==="72910"&&x.kind==="NEGATIVE_LABEL"));
+assert.ok(chaotic.ignored.some(x=>x.token==="45066"&&x.kind==="NEGATIVE_LABEL"));
+assert.equal(chaotic.review.some(x=>x.token==="0198"||x.token==="2026"),false);
+assert.deepEqual(z("Invoice 72910 | Pelham NH 03076").ready.map(x=>x.zip),["03076"]);
+assert.deepEqual(z("ref 72910 | ZIP: 10001").ready.map(x=>x.zip),["10001"]);
+assert.equal(z("Tracking ID 7438291902245").ready.length,0);
+assert.equal(z("Phone: 212-555-0198").review.some(x=>x.token==="0198"),false);
+assert.equal(z("Date 11-22-2026").review.some(x=>x.token==="2026"),false);
+
 // Safety gate: header labels alone do not block geography; credential/payment evidence does.
 assert.equal(detectSensitiveInput("BIN\n03076").blocked,false);
 assert.equal(detectSensitiveInput("4111 1111 1111 1111").blocked,true);

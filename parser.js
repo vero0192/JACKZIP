@@ -4,7 +4,7 @@
 
 const CARDISH_RE=/(?:\d[ -]*?){13,19}/g;
 const PLACEHOLDERS=new Set(["00000","TBC","N/A","NA","NONE","NULL","UNKNOWN","-"]);
-const NEGATIVE_LABEL_RE=/\b(?:bin|id|order|sku|product|price|amount|total|exp(?:iration)?(?:\s*date)?|account|reference|serial|invoice|customer\s*id)\b/i;
+const NEGATIVE_LABEL_RE=/\b(?:bin|id|order|sku|product|price|amount|total|exp(?:iration)?(?:\s*date)?|account|ref(?:erence)?|tracking(?:\s*(?:number|id))?|shipment\s*(?:id|number)|serial|invoice|customer\s*id)\b/i;
 const ZIP_LABEL_RE=/\b(?:zip(?:\s*code)?|postal\s*code)\b/i;
 const URLISH_RE=/(?:https?:\/\/|www\.|\/[A-Za-z0-9_-]+\/)/i;
 const COPYRIGHT_RE=/\b(?:copyright|©)\b/i;
@@ -105,6 +105,13 @@ function shortZipAllowed(state,padded){
   }
 }
 function contextWindow(lines,index,radius=2){return lines.slice(Math.max(0,index-radius),Math.min(lines.length,index+radius+1)).join(" ").trim()}
+function sourceFieldAt(line,index){
+  // A pipe, tab or semicolon separates unrelated source fields.
+  // Do not let a ZIP label in one field justify a ref/tracking ID in another.
+  const start=Math.max(line.lastIndexOf("|",index),line.lastIndexOf(";",index),line.lastIndexOf("\t",index))+1;
+  const boundaries=[line.indexOf("|",index),line.indexOf(";",index),line.indexOf("\t",index)].filter(pos=>pos>=0);
+  return line.slice(start,boundaries.length?Math.min(...boundaries):line.length);
+}
 function reasonItem(token,line,raw,reason,extra={}){return {token,line,raw,reason,...extra}}
 
 export function extractZipCandidates(text){
@@ -133,7 +140,6 @@ export function extractZipCandidates(text){
     const state=stateEvidence(raw)||(!rowCells?stateEvidence(context):null);
     const foreign=foreignEvidence(raw)||(!rowCells?foreignEvidence(context):null);
     const explicitZip=Boolean(rowCells)||ZIP_LABEL_RE.test(context);
-    const negative=NEGATIVE_LABEL_RE.test(line)&&!ZIP_LABEL_RE.test(line);
     const urlish=URLISH_RE.test(line);const copyright=COPYRIGHT_RE.test(line);
 
     // 5+5 ranges first. Never expand here.
@@ -173,7 +179,8 @@ export function extractZipCandidates(text){
       if(/[A-Za-z]/.test(before)||/[A-Za-z]/.test(after)){review.push(reasonItem(zip,lineNo,raw,"Digits touch letters; review before lookup.",{kind:"ATTACHED_TEXT"}));continue}
       if(after==="%"||before==="$"||after==="$" ){ignored.push(reasonItem(zip,lineNo,raw,"Numeric value is currency/percentage-like, not ZIP geography.",{kind:"NUMERIC_NOISE"}));continue}
       if(zip==="00000"){invalid.push(reasonItem(zip,lineNo,raw,"Placeholder ZIP; never ranking eligible.",{kind:"PLACEHOLDER"}));continue}
-      if(negative&&zipCell!==zip){ignored.push(reasonItem(zip,lineNo,raw,"Five digits appear under a non-geographic label.",{kind:"NEGATIVE_LABEL"}));continue}
+      const field=sourceFieldAt(line,start);
+      if(NEGATIVE_LABEL_RE.test(field)&&!ZIP_LABEL_RE.test(field)&&zipCell!==zip){ignored.push(reasonItem(zip,lineNo,raw,"Five digits appear under a non-geographic label.",{kind:"NEGATIVE_LABEL"}));continue}
       if(urlish&&!explicitZip&&!state){review.push(reasonItem(zip,lineNo,raw,"Five digits appear in a URL/path; geography meaning is not established.",{kind:"URL_CONTEXT"}));continue}
       if(copyright&&!explicitZip&&!state){review.push(reasonItem(zip,lineNo,raw,"Five digits appear next to copyright text; shape alone does not confirm a ZIP.",{kind:"COPYRIGHT_CONTEXT"}));continue}
       if(foreign&&!state&&!explicitZip&&zipCell!==zip){review.push(reasonItem(zip,lineNo,raw,"Five digits appear in foreign-only context; U.S. ZIP meaning needs independent support.",{kind:"FOREIGN_CONTEXT"}));continue}
@@ -189,6 +196,8 @@ export function extractZipCandidates(text){
       const start=m.index,end=start+m[1].length;if(consumed.some(([a,b])=>start>=a&&end<=b))continue;
       const token=m[1];
       if(/\d/.test(line[start-1]||"")||/\d/.test(line[end]||""))continue;
+      // A date's year or the final four digits of a phone number are not short ZIPs.
+      if(/(?:\d{1,2}[-/]\d{1,2}[-/]|\d{3}[-.\s]\d{3}[-.\s])$/.test(line.slice(0,start)))continue;
       if(/%/.test(line.slice(Math.max(0,start-1),Math.min(line.length,end+1))))continue;
       if(!state||!explicitZip){
         if(token.length===4&&!/\//.test(line))review.push(reasonItem(token,lineNo,raw,"Short numeric token is not silently padded without explicit ZIP + state context.",{kind:"SHORT_ZIP"}));
